@@ -20,33 +20,6 @@ A dark, mobile-friendly psychological-horror mystery made with plain HTML, CSS, 
 2. Open `index.html` in a modern browser.
 3. If your browser restricts local audio or clipboard operations, publish through GitHub Pages or run a simple local web server. The game itself needs no build step.
 
-## Publish on GitHub Pages
-
-1. Create a public repository named `mind-night` (or any name you prefer).
-2. Upload the **contents** of this folder to the repository root, preserving the `assets/` folder:
-
-   ```text
-   index.html
-   style.css
-   app.js
-   favicon.svg
-   README.md
-   assets/
-     damaged-record.jpg
-     portrait-a.jpg
-     portrait-b.jpg
-     portrait-c.jpg
-     red-vision.jpg
-     ward-corridor.jpg
-     ward-exterior.jpg
-   ```
-
-3. Open **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**, select `main` and `/(root)`, then click **Save**.
-5. Wait for GitHub to publish the site. The address normally resembles `https://YOUR-USERNAME.github.io/mind-night/`.
-
-Official guide: <https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site>
-
 ## Controls
 
 - **Sound On/Off:** enables or mutes synthesized ambience. The musical texture intensifies as the player logs more case files.
