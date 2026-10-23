@@ -13,17 +13,6 @@ A short, responsive psychological-horror web experience about attention, memory,
 
 Open `index.html` in a modern browser. For the most realistic test, use a local server or GitHub Pages; clipboard sharing works best in a secure context (HTTPS).
 
-## Publish on GitHub Pages
-
-1. Sign in to GitHub and create a **new public repository** (for example, `mind-night`).
-2. Extract the ZIP, then upload its files directly into the repository root. Keep the filenames unchanged. Upload `index.html`, `style.css`, `app.js`, `favicon.svg`, and optionally `README.md`. Do not upload only the ZIP itself; GitHub Pages needs `index.html` at the top level of the published folder.
-3. Open the repository's **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Choose the `main` branch and the `/ (root)` folder, then click **Save**.
-6. Wait for the Pages deployment to complete. Your website URL will appear in the Pages settings; it is normally `https://YOUR-USERNAME.github.io/mind-night/`.
-
-If your repository has a different name, the URL will use that repository name. It may take a short time after saving for the first deployment to appear.
-
 ## Customization
 
 - Story text and interactions are in `app.js`.
