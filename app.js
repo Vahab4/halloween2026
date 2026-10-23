@@ -211,11 +211,15 @@
   };
 
   const phaseNames = {
-    intro: 'RESTRICTED ACCESS // LEVEL 4', briefing: 'INCIDENT BRIEFING // 02:17',
-    archive: 'RECOVERED PATIENT ARCHIVE', dossier: 'INDIVIDUAL RECORD // DAMAGED',
-    evidence: 'CROSS-REFERENCE / EVIDENCE BOARD', accusation: 'FINAL DISPOSITION // AWAITING SIGNATURE',
+    intro: 'RESTRICTED ACCESS // LEVEL 4',
+    briefing: 'INCIDENT BRIEFING // 02:17',
+    archive: 'RECOVERED PATIENT ARCHIVE',
+    dossier: 'INDIVIDUAL RECORD // DAMAGED',
+    evidence: 'CROSS-REFERENCE / EVIDENCE BOARD',
+    accusation: 'FINAL DISPOSITION // AWAITING SIGNATURE',
     ending: 'CASE DISPOSITION / ARCHIVE SEALED'
   };
+
   let elapsedTimer = null;
   let toastTimer = null;
   let audioContext = null;
@@ -230,8 +234,16 @@
   let pulseFlip = false;
 
   const caseById = new Map(patientFiles.map(file => [file.id, file]));
-  const safe = (value) => String(value).replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
-  const normalize = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  const safe = (value) => String(value).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+  const normalize = (value) => String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   const has = (id) => state.reviewed.includes(Number(id));
   const isComplete = () => state.reviewed.length === patientFiles.length;
   const stage = () => Math.min(4, Math.floor(state.reviewed.length / 4));
@@ -265,6 +277,7 @@
   function updateSideRail() {
     const count = state.reviewed.length;
     const percentage = Math.round(count / patientFiles.length * 100);
+
     filesReadLabel.textContent = String(count).padStart(2, '0');
     progressFill.style.width = `${percentage}%`;
     progressLabel.textContent = `${String(percentage).padStart(2, '0')}%`;
@@ -272,9 +285,14 @@
     readyLabel.textContent = count >= 12 ? 'READY' : 'LOCKED';
     readyLabel.style.color = count >= 12 ? '#7fbb9e' : '';
     suspectStatus.textContent = state.ending ? 'RESOLVED' : (count >= 12 ? 'IDENTIFY' : 'UNKNOWN');
+
     const t = stage();
     document.body.dataset.threat = String(t);
-    const labels = ['LOW SIGNAL', 'STATIC RISING', 'SIGNAL BLEED', 'PROXIMITY WARNING', 'INSIDE THE WALL'];
+
+    const labels = [
+      'LOW SIGNAL', 'STATIC RISING', 'SIGNAL BLEED',
+      'PROXIMITY WARNING', 'INSIDE THE WALL'
+    ];
     const copy = [
       'The line is quiet. It is never silent.',
       'A second tone has entered the recording.',
@@ -282,12 +300,20 @@
       'The sound is closer than the speakers.',
       'Something is answering the sound you make.'
     ];
+
     tensionLabel.textContent = labels[t];
     tensionCopy.textContent = copy[t];
-    headerStatusText.textContent = state.screen === 'intro' ? 'ARCHIVE SEALED' : state.screen === 'ending' ? 'CASE CLOSED' : 'LIVE RECOVERY';
-    systemMessage.textContent = state.screen === 'ending' ? 'DISPOSITION FILED LOCALLY' : t >= 3 ? 'SIGNAL INTEGRITY / UNSTABLE' : 'NO EXTERNAL CONNECTION';
+    headerStatusText.textContent =
+      state.screen === 'intro' ? 'ARCHIVE SEALED' :
+      state.screen === 'ending' ? 'CASE CLOSED' : 'LIVE RECOVERY';
+    systemMessage.textContent =
+      state.screen === 'ending' ? 'DISPOSITION FILED LOCALLY' :
+      t >= 3 ? 'SIGNAL INTEGRITY / UNSTABLE' : 'NO EXTERNAL CONNECTION';
+
     updateClock();
+
     if (state.soundOn) updateAudioIntensity(t);
+
     const ready = $('#accusation-link');
     if (ready) ready.setAttribute('aria-disabled', count < 12 ? 'true' : 'false');
   }
@@ -295,12 +321,22 @@
   function render() {
     phaseLabel.textContent = phaseNames[state.screen] || 'ARCHIVE NODE 13';
     updateSideRail();
+
     const renderers = {
-      intro: renderIntro, briefing: renderBriefing, archive: renderArchive,
-      dossier: renderDossier, evidence: renderEvidence, accusation: renderAccusation, ending: renderEnding
+      intro: renderIntro,
+      briefing: renderBriefing,
+      archive: renderArchive,
+      dossier: renderDossier,
+      evidence: renderEvidence,
+      accusation: renderAccusation,
+      ending: renderEnding
     };
+
     app.innerHTML = (renderers[state.screen] || renderIntro)();
-    app.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    app.scrollIntoView({
+      block: 'nearest',
+      behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+    });
   }
 
   function renderIntro() {
@@ -330,8 +366,12 @@
   }
 
   function renderArchive() {
-    const files = patientFiles.filter(file => state.filter === 'all' || (state.filter === 'early' ? file.id <= 5 : file.id >= 44));
+    const files = patientFiles.filter(file =>
+      state.filter === 'all' ||
+      (state.filter === 'early' ? file.id <= 5 : file.id >= 44)
+    );
     const reviewedCount = state.reviewed.length;
+
     return `<section class="scene">
       <div class="archive-top"><div><div class="section-kicker"><span><span class="kicker-mark">●</span> RECOVERED RECORDS / STORAGE BAY 4</span><span>${String(reviewedCount).padStart(2,'0')} / 18 READ</span></div><h1 class="scene-title">Patient <span class="red">archive.</span></h1><p class="lede">Eighteen records survived out of 103. Some tell the truth badly. Some tell a lie beautifully. Open a file, read every section, then log it back into the evidence board.</p></div></div>
       <div class="archive-controls" role="group" aria-label="Filter patient files"><button type="button" class="filter-tab ${state.filter==='all'?'active':''}" data-action="filter-cases" data-filter="all">ALL SURVIVING FILES / 18</button><button type="button" class="filter-tab ${state.filter==='early'?'active':''}" data-action="filter-cases" data-filter="early">FILES 01–05</button><button type="button" class="filter-tab ${state.filter==='late'?'active':''}" data-action="filter-cases" data-filter="late">FILES 44–56</button></div>
@@ -352,6 +392,7 @@
     const file = caseById.get(state.currentCase) || patientFiles[0];
     const prev = [...patientFiles].reverse().find(item => item.id < file.id);
     const next = patientFiles.find(item => item.id > file.id);
+
     return `<section class="scene">
       <div class="section-kicker"><span><span class="kicker-mark">●</span> INDIVIDUAL RECORD / CASE ${String(file.id).padStart(3,'0')}</span><button type="button" class="text-button" data-action="archive">[ BACK TO ARCHIVE ]</button></div>
       <div class="dossier-head"><div class="dossier-portrait ${portraitClass(file)}" role="img" aria-label="Distressed archive photograph associated with case ${file.id}"></div><div><div class="dossier-serial">PATIENT NO. ${String(file.id).padStart(3,'0')} // NAME ${file.id===52?'PARTIALLY BURNED':'MISSING OR CORRUPTED'}</div><h1 class="dossier-title">${safe(file.codename)}</h1><p class="dossier-subtitle">ESTIMATED AGE ${file.age} // ORIGINAL IDENTIFIERS UNVERIFIED</p><span class="file-status">${has(file.id)?'PREVIOUSLY REVIEWED':'REVIEW REQUIRED'} / SOURCE QUALITY: MIXED</span><p class="dossier-summary">${safe(file.summary)}</p><p class="fine-print">File handling note: “Behavior observed” and “meaning inferred” are different things. Preserve that distinction.</p></div></div>
@@ -371,6 +412,7 @@
 
   function renderEvidence() {
     const foundCount = evidenceCatalog.filter(isEvidenceUnlocked).length;
+
     return `<section class="scene">
       <div class="section-kicker"><span><span class="kicker-mark">●</span> CROSS-REFERENCE / BOARD 02</span><span>${String(foundCount).padStart(2,'0')} FRAGMENTS RECOVERED</span></div>
       <h1 class="scene-title">Connect the <span class="red">dots.</span></h1>
@@ -388,6 +430,7 @@
     if (state.reviewed.length < 12) {
       return `<section class="scene"><div class="section-kicker"><span>FINAL DISPOSITION / LOCKED</span></div><h1 class="scene-title">The record is <span class="red">incomplete.</span></h1><p class="lede">At least 12 patient files must be reviewed before the final accusation is accepted. You have read ${state.reviewed.length} of 18.</p><div class="btn-row"><button class="btn-primary" data-action="archive">RETURN TO ARCHIVE <span class="button-arrow">→</span></button></div></section>`;
     }
+
     return `<section class="scene">
       <div class="section-kicker"><span><span class="kicker-mark">●</span> FINAL DISPOSITION / FORM 13-B</span><span>REVIEWED ${state.reviewed.length}/18</span></div>
       <h1 class="scene-title">Name the <span class="red">one who left.</span></h1>
@@ -408,9 +451,11 @@
     const identityFound = result.identityCorrect;
     const suspectFound = result.suspectCorrect;
     const motiveFound = result.motiveCorrect;
+
     let stamp = 'DISPOSITION / UNSOLVED';
     let title = 'The archive rejects your conclusion.';
     let intro = 'A vivid note can draw the eye away from a stronger timeline. The record is still open. Revisit the files and compare the route, time anomaly, name fragments, and motive.';
+
     if (allRight) {
       stamp = 'DISPOSITION / SEALED WITH SUPPLEMENT';
       title = 'Mara Voss. The ledger. The bell that never rang.';
@@ -432,6 +477,7 @@
       title = 'The wrong file was sealed.';
       intro = 'The chosen record has a striking detail, but does not connect the relevant access, timing, and record-destruction motive as strongly as the surviving evidence does. A symptom or intimate history cannot stand in for that connection.';
     }
+
     return `<section class="scene">
       <div class="section-kicker"><span><span class="kicker-mark">●</span> FINAL DISPOSITION / SESSION ${String(Math.floor(state.elapsedSeconds/60)).padStart(2,'0')}:${String(state.elapsedSeconds%60).padStart(2,'0')}</span><span>ARCHIVE ${allRight?'SUPPLEMENTED':'SEALED'}</span></div>
       <div class="outcome-card"><div class="outcome-stamp">${stamp}</div><h1 class="outcome-title">${safe(title)}</h1><p>${safe(intro)}</p><div class="outcome-receipt"><div class="receipt-item"><span>SUSPECT FILE</span><strong>${suspectFound?'MATCH':'NO MATCH'} / ${safe(result.suspect||'—')}</strong></div><div class="receipt-item"><span>IDENTITY</span><strong>${identityFound?'CORROBORATED':'UNRESOLVED'}</strong></div><div class="receipt-item"><span>MOTIVE</span><strong>${motiveFound?'SUPPORTED':'NOT SUPPORTED'}</strong></div></div></div>
@@ -452,11 +498,13 @@
   function markReviewed(id) {
     const numericId = Number(id ?? state.currentCase);
     if (!caseById.has(numericId)) return;
+
     const isNew = !has(numericId);
     if (isNew) state.reviewed.push(numericId);
     state.reviewed.sort((a,b) => a-b);
     state.screen = 'archive';
     render();
+
     if (isNew) {
       const t = stage();
       if ([1,2,3,4].includes(t) && state.reviewed.length % 4 === 0) {
@@ -478,12 +526,14 @@
 
   function changeScreen(screen) {
     if (screen !== 'intro') beginSession();
+
     if (screen === 'accusation' && state.reviewed.length < 12) {
-      showToast(`FINAL ACCUSATION LOCKED. REVIEW ${12 - state.reviewed.length} MORE FILE${12 - state.reviewed.length === 1 ? '' : 'S'}.`);
+      showToast(`FINAL ACCUSATION LOCKED. REVIEW ${12 - state.reviewed.length} MORE FILE${state.reviewed.length === 11 ? '' : 'S'}.`);
       state.screen = 'archive';
       render();
       return;
     }
+
     state.screen = screen;
     render();
   }
@@ -513,18 +563,29 @@
     const identity = String(data.get('identity') || '').trim();
     const motive = String(data.get('motive') || '');
     const phrase = String(data.get('secret') || '').trim();
+
     const suspectCorrect = suspect === 52;
     const identityCorrect = normalize(identity) === 'mara voss';
     const motiveCorrect = motive === 'ledger-revenge';
     const normalizedPhrase = normalize(phrase);
-    const secretCorrect = isComplete() && ['the bell never rang', 'the tower bell never rang', 'bell never rang'].includes(normalizedPhrase);
+    const secretCorrect = isComplete() && [
+      'the bell never rang',
+      'the tower bell never rang',
+      'bell never rang'
+    ].includes(normalizedPhrase);
+
     let kind = 'unresolved';
     if (suspectCorrect && identityCorrect && motiveCorrect && secretCorrect) kind = 'secret';
     else if (suspectCorrect && identityCorrect && motiveCorrect) kind = 'solved';
+
     state.accusation = { suspect, identity, motive, phrase };
-    state.ending = { kind, suspect, identity, motive, suspectCorrect, identityCorrect, motiveCorrect, secretCorrect };
+    state.ending = {
+      kind, suspect, identity, motive,
+      suspectCorrect, identityCorrect, motiveCorrect, secretCorrect
+    };
     state.screen = 'ending';
     render();
+
     if (kind === 'secret') showToast('SUPPLEMENTAL ENDING RECOVERED. THE FINAL MARGIN IS LEGIBLE.');
     else if (suspectCorrect && identityCorrect && motiveCorrect) showToast('PRIMARY FINDING ACCEPTED. ONE SUPPLEMENT REMAINS SEALED.');
   }
@@ -532,8 +593,13 @@
   function shareResult() {
     const result = state.ending || {};
     const text = `I investigated MIND//NIGHT — The Ward 13 Incident. Disposition: ${result.kind === 'secret' ? 'Secret ending unlocked' : result.suspectCorrect ? 'Identity clue found' : 'Case unresolved'}. Can you reconstruct the killer’s identity and motive?`;
+
     if (navigator.share) {
-      navigator.share({ title: 'MIND//NIGHT — The Ward 13 Incident', text, url: location.href }).catch(() => copyText(text));
+      navigator.share({
+        title: 'MIND//NIGHT — The Ward 13 Incident',
+        text,
+        url: location.href
+      }).catch(() => copyText(text));
     } else {
       copyText(`${text} ${location.href}`);
     }
@@ -541,18 +607,30 @@
 
   function copyText(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(() => showToast('RESULT SUMMARY COPIED. SEND IT TO YOUR FRIENDS.'), () => fallbackCopy(text));
-    } else fallbackCopy(text);
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('RESULT SUMMARY COPIED. SEND IT TO YOUR FRIENDS.'))
+        .catch(() => fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
   }
 
   function fallbackCopy(text) {
     const input = document.createElement('textarea');
     input.value = text;
     input.setAttribute('readonly', '');
-    input.style.position = 'fixed'; input.style.opacity = '0';
-    document.body.appendChild(input); input.select();
-    try { document.execCommand('copy'); showToast('RESULT SUMMARY COPIED. SEND IT TO YOUR FRIENDS.'); }
-    catch (_) { showToast(text); }
+    input.style.position = 'fixed';
+    input.style.opacity = '0';
+    document.body.appendChild(input);
+    input.select();
+
+    try {
+      document.execCommand('copy');
+      showToast('RESULT SUMMARY COPIED. SEND IT TO YOUR FRIENDS.');
+    } catch (_) {
+      showToast(text);
+    }
+
     input.remove();
   }
 
@@ -560,18 +638,22 @@
   function makeNoiseBuffer(context) {
     const buffer = context.createBuffer(1, context.sampleRate * 2, context.sampleRate);
     const data = buffer.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.22;
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * 0.22;
+    }
     return buffer;
   }
 
   function startAudio() {
     const Context = window.AudioContext || window.webkitAudioContext;
+
     if (!Context) {
       showToast('THIS BROWSER DOES NOT SUPPORT SYNTHESIZED AMBIENCE. THE GAME WILL CONTINUE SILENTLY.');
       state.soundOn = false;
       renderSoundState();
       return;
     }
+
     try {
       audioContext = new Context();
       masterGain = audioContext.createGain();
@@ -581,40 +663,61 @@
       droneA = audioContext.createOscillator();
       droneA.type = 'sine';
       droneA.frequency.value = 49;
-      const gainA = audioContext.createGain(); gainA.gain.value = 0.24;
-      droneA.connect(gainA); gainA.connect(masterGain); droneA.start();
+      const gainA = audioContext.createGain();
+      gainA.gain.value = 0.24;
+      droneA.connect(gainA);
+      gainA.connect(masterGain);
+      droneA.start();
 
       droneB = audioContext.createOscillator();
       droneB.type = 'triangle';
       droneB.frequency.value = 57.2;
-      const gainB = audioContext.createGain(); gainB.gain.value = 0.12;
-      droneB.connect(gainB); gainB.connect(masterGain); droneB.start();
+      const gainB = audioContext.createGain();
+      gainB.gain.value = 0.12;
+      droneB.connect(gainB);
+      gainB.connect(masterGain);
+      droneB.start();
 
       highTone = audioContext.createOscillator();
-      highTone.type = 'sine'; highTone.frequency.value = 139;
-      const highGain = audioContext.createGain(); highGain.gain.value = 0.0001;
-      highTone.connect(highGain); highGain.connect(masterGain); highTone.start();
+      highTone.type = 'sine';
+      highTone.frequency.value = 139;
+      const highGain = audioContext.createGain();
+      highGain.gain.value = 0.0001;
+      highTone.connect(highGain);
+      highGain.connect(masterGain);
+      highTone.start();
       highTone._level = highGain;
 
       noiseSource = audioContext.createBufferSource();
-      noiseSource.buffer = makeNoiseBuffer(audioContext); noiseSource.loop = true;
-      noiseFilter = audioContext.createBiquadFilter(); noiseFilter.type = 'lowpass'; noiseFilter.frequency.value = 270;
-      noiseGain = audioContext.createGain(); noiseGain.gain.value = 0.015;
-      noiseSource.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(masterGain); noiseSource.start();
+      noiseSource.buffer = makeNoiseBuffer(audioContext);
+      noiseSource.loop = true;
+      noiseFilter = audioContext.createBiquadFilter();
+      noiseFilter.type = 'lowpass';
+      noiseFilter.frequency.value = 270;
+      noiseGain = audioContext.createGain();
+      noiseGain.gain.value = 0.015;
+      noiseSource.connect(noiseFilter);
+      noiseFilter.connect(noiseGain);
+      noiseGain.connect(masterGain);
+      noiseSource.start();
 
       if (audioContext.state === 'suspended') audioContext.resume();
       masterGain.gain.setTargetAtTime(0.15, audioContext.currentTime, 0.8);
       updateAudioIntensity(stage());
+
       clearInterval(pulseTimer);
       pulseTimer = setInterval(audioPulse, 900);
     } catch (error) {
-      stopAudio(); state.soundOn = false; renderSoundState();
+      stopAudio();
+      state.soundOn = false;
+      renderSoundState();
       showToast('AMBIENT AUDIO COULD NOT START IN THIS BROWSER.');
     }
   }
 
   function updateAudioIntensity(level) {
     if (!audioContext || !masterGain) return;
+
     const now = audioContext.currentTime;
     const stageSettings = [
       {a:49, b:57.2, high:0.0001, noise:0.012, cutoff:270, master:0.12},
@@ -623,12 +726,18 @@
       {a:38, b:68.5, high:0.023, noise:0.033, cutoff:1100, master:0.17},
       {a:35, b:73.8, high:0.031, noise:0.04, cutoff:1550, master:0.18}
     ][level];
+
     droneA.frequency.setTargetAtTime(stageSettings.a, now, 0.7);
     droneB.frequency.setTargetAtTime(stageSettings.b, now, 0.7);
-    if (highTone && highTone._level) highTone._level.gain.setTargetAtTime(stageSettings.high, now, 1.0);
+
+    if (highTone && highTone._level) {
+      highTone._level.gain.setTargetAtTime(stageSettings.high, now, 1.0);
+    }
+
     if (noiseGain) noiseGain.gain.setTargetAtTime(stageSettings.noise, now, 0.8);
     if (noiseFilter) noiseFilter.frequency.setTargetAtTime(stageSettings.cutoff, now, 1.0);
     masterGain.gain.setTargetAtTime(stageSettings.master, now, 0.9);
+
     if (pulseTimer) {
       clearInterval(pulseTimer);
       pulseTimer = setInterval(audioPulse, Math.max(440, 1050 - level * 145));
@@ -637,64 +746,134 @@
 
   function audioPulse() {
     if (!audioContext || !masterGain || !state.soundOn || stage() < 2) return;
+
     const t = audioContext.currentTime;
     pulseFlip = !pulseFlip;
     const osc = audioContext.createOscillator();
     const gain = audioContext.createGain();
-    osc.type = 'sine'; osc.frequency.setValueAtTime(pulseFlip ? 42 : 34, t);
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(pulseFlip ? 42 : 34, t);
     gain.gain.setValueAtTime(0.0001, t);
     gain.gain.exponentialRampToValueAtTime(stage() >= 4 ? 0.055 : stage() === 3 ? 0.034 : 0.02, t + 0.035);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-    osc.connect(gain); gain.connect(masterGain); osc.start(t); osc.stop(t + 0.24);
+
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(t);
+    osc.stop(t + 0.24);
+
     if (stage() >= 3 && pulseFlip) {
-      const tick = audioContext.createOscillator(); const tickGain = audioContext.createGain();
-      tick.type = 'square'; tick.frequency.setValueAtTime(620 + stage() * 41, t);
-      tickGain.gain.setValueAtTime(0.0001, t); tickGain.gain.exponentialRampToValueAtTime(0.009 + stage() * 0.003, t + 0.005); tickGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
-      tick.connect(tickGain); tickGain.connect(masterGain); tick.start(t); tick.stop(t + 0.08);
+      const tick = audioContext.createOscillator();
+      const tickGain = audioContext.createGain();
+
+      tick.type = 'square';
+      tick.frequency.setValueAtTime(620 + stage() * 41, t);
+      tickGain.gain.setValueAtTime(0.0001, t);
+      tickGain.gain.exponentialRampToValueAtTime(0.009 + stage() * 0.003, t + 0.005);
+      tickGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+
+      tick.connect(tickGain);
+      tickGain.connect(masterGain);
+      tick.start(t);
+      tick.stop(t + 0.08);
     }
   }
 
   function stopAudio() {
-    clearInterval(pulseTimer); pulseTimer = null;
+    clearInterval(pulseTimer);
+    pulseTimer = null;
+
     if (audioContext) {
-      try { audioContext.close(); } catch (_) { /* close best-effort */ }
+      try {
+        audioContext.close();
+      } catch (_) {
+        /* close best-effort */
+      }
     }
-    audioContext = null; masterGain = null; droneA = null; droneB = null; highTone = null; noiseSource = null; noiseGain = null; noiseFilter = null;
+
+    audioContext = null;
+    masterGain = null;
+    droneA = null;
+    droneB = null;
+    highTone = null;
+    noiseSource = null;
+    noiseGain = null;
+    noiseFilter = null;
   }
 
   function renderSoundState() {
     soundToggle.setAttribute('aria-pressed', state.soundOn ? 'true' : 'false');
     soundLabel.textContent = state.soundOn ? 'SOUND ON' : 'SOUND OFF';
     soundSymbol.textContent = state.soundOn ? '◖))' : '♫';
-    if (!state.soundOn) stopAudio();
-    else if (!audioContext) startAudio();
-    else updateAudioIntensity(stage());
+
+    if (!state.soundOn) {
+      stopAudio();
+    } else if (!audioContext) {
+      startAudio();
+    } else {
+      updateAudioIntensity(stage());
+    }
   }
 
   function toggleSound() {
     state.soundOn = !state.soundOn;
     renderSoundState();
-    if (state.soundOn) showToast('AMBIENCE ENABLED. THE SOUND WILL CHANGE AS YOU READ THE FILES.');
-    else showToast('AMBIENCE MUTED. THE INVESTIGATION CONTINUES.');
+
+    if (state.soundOn) {
+      showToast('AMBIENCE ENABLED. THE SOUND WILL CHANGE AS YOU READ THE FILES.');
+    } else {
+      showToast('AMBIENCE MUTED. THE INVESTIGATION CONTINUES.');
+    }
   }
 
   document.body.addEventListener('click', (event) => {
     const button = event.target.closest('[data-action]');
     if (!button) return;
+
     const action = button.dataset.action;
+
     switch (action) {
-      case 'intro': state.screen = 'intro'; render(); break;
-      case 'briefing': beginSession(); state.screen = 'briefing'; render(); break;
-      case 'start-investigation': changeScreen('archive'); break;
-      case 'archive': changeScreen('archive'); break;
-      case 'evidence': changeScreen('evidence'); break;
-      case 'accusation': changeScreen('accusation'); break;
-      case 'open-case': openCase(button.dataset.id); break;
-      case 'mark-reviewed': markReviewed(button.dataset.id); break;
-      case 'filter-cases': state.filter = button.dataset.filter || 'all'; state.screen = 'archive'; render(); break;
-      case 'toggle-sound': toggleSound(); break;
-      case 'share-result': shareResult(); break;
-      default: break;
+      case 'intro':
+        state.screen = 'intro';
+        render();
+        break;
+      case 'briefing':
+        beginSession();
+        state.screen = 'briefing';
+        render();
+        break;
+      case 'start-investigation':
+        changeScreen('archive');
+        break;
+      case 'archive':
+        changeScreen('archive');
+        break;
+      case 'evidence':
+        changeScreen('evidence');
+        break;
+      case 'accusation':
+        changeScreen('accusation');
+        break;
+      case 'open-case':
+        openCase(button.dataset.id);
+        break;
+      case 'mark-reviewed':
+        markReviewed(button.dataset.id);
+        break;
+      case 'filter-cases':
+        state.filter = button.dataset.filter || 'all';
+        state.screen = 'archive';
+        render();
+        break;
+      case 'toggle-sound':
+        toggleSound();
+        break;
+      case 'share-result':
+        shareResult();
+        break;
+      default:
+        break;
     }
   });
 
@@ -704,9 +883,13 @@
       submitAccusation(event.target);
     }
   });
+
   soundToggle.addEventListener('click', toggleSound);
   $('#restart-button').addEventListener('click', resetGame);
-  $('#home-button').addEventListener('click', event => { event.preventDefault(); changeScreen('intro'); });
+  $('#home-button').addEventListener('click', event => {
+    event.preventDefault();
+    changeScreen('intro');
+  });
 
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && state.soundOn && audioContext) {
