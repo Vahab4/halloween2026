@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08090d">
+  <meta name="description" content="MIND//NIGHT: The Ward 13 Incident. A fictional psychological horror mystery with 18 damaged patient files, a vampire attack, and one escaped killer.">
+  <meta property="og:title" content="MIND//NIGHT — The Ward 13 Incident">
+  <meta property="og:description" content="103 patients. 18 surviving files. Two deaths. One identity to reconstruct.">
+  <title>MIND//NIGHT — The Ward 13 Incident</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preload" as="image" href="assets/ward-exterior.jpg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-threat="0">
+  <div class="noise-layer" aria-hidden="true"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="#top" id="home-button" aria-label="MIND NIGHT home">
+      <span class="brand-sigil" aria-hidden="true">M<span>∕</span>N</span>
+      <span class="brand-copy"><strong>MIND<span>//</span>NIGHT</strong><small>WARD 13 INCIDENT ARCHIVE</small></span>
+    </a>
+    <div class="header-status"><span class="status-light"></span><span id="header-status-text">ARCHIVE SEALED</span><span class="header-separator">/</span><span>31 OCT // 02:17</span></div>
+    <div class="header-controls">
+      <button id="sound-toggle" class="utility-button" type="button" aria-pressed="false" title="Turn evolving ambient sound on or off"><span aria-hidden="true" id="sound-symbol">♫</span><span id="sound-label">SOUND OFF</span></button>
+      <button id="restart-button" class="utility-button restart-button" type="button" title="Restart the investigation">↺ <span>RESET</span></button>
+    </div>
+  </header>
+
+  <div class="layout" id="top">
+    <main class="main-panel" aria-live="polite" aria-atomic="true">
+      <div class="panel-rail"><span id="phase-label">RESTRICTED ACCESS // LEVEL 4</span><span id="clock-label">LOCAL SESSION // 00:00</span></div>
+      <div id="app" class="app-content">
+        <div class="loading-state"><span class="loading-ring"></span><p>RECONSTRUCTING ARCHIVE...</p></div>
+      </div>
+      <div class="panel-footer"><span>MN-13 / BUILD 10.31.26</span><span id="system-message">NO EXTERNAL CONNECTION</span><span>FICTIONAL CASEWORK</span></div>
+    </main>
+
+    <aside class="side-rail">
+      <section class="rail-card recovery-card">
+        <div class="rail-heading"><span class="rail-glyph">▤</span><div><p class="eyebrow">RESEARCH DIVISION</p><h2>INVESTIGATION</h2></div></div>
+        <div class="recovery-count"><strong id="files-read">00</strong><span>/ 18<br><small>FILES REVIEWED</small></span></div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="meter-caption"><span>ARCHIVE RECOVERY</span><span id="progress-label">00%</span></div>
+        <div class="stat-line"><span>KNOWN PATIENTS</span><strong>103</strong></div>
+        <div class="stat-line"><span>AVAILABLE FILES</span><strong>01–05 / 44–56</strong></div>
+        <div class="stat-line"><span>CONFIRMED DEATHS</span><strong class="red-text">02</strong></div>
+        <div class="stat-line"><span>ESCAPED SUBJECT</span><strong class="red-text" id="suspect-status">UNKNOWN</strong></div>
+      </section>
+
+      <section class="rail-card tension-card">
+        <div class="rail-heading compact"><span class="recording-dot"></span><div><p class="eyebrow">AMBIENT MONITOR</p><h2 id="tension-label">LOW SIGNAL</h2></div></div>
+        <div class="waveform" id="waveform" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <p class="rail-note" id="tension-copy">The line is quiet. It is never silent.</p>
+        <button class="text-button" type="button" data-action="toggle-sound">[ TOGGLE SOUND ]</button>
+      </section>
+
+      <nav class="rail-card nav-card" aria-label="Investigation navigation">
+        <p class="eyebrow">CASEWORK</p>
+        <button class="rail-link" type="button" data-action="archive"><span>01</span> Patient archive <span class="rail-link-arrow">↗</span></button>
+        <button class="rail-link" type="button" data-action="evidence"><span>02</span> Evidence board <span class="rail-link-arrow">↗</span><em id="evidence-total">00</em></button>
+        <button class="rail-link" type="button" data-action="accusation" id="accusation-link"><span>03</span> Final accusation <span class="rail-link-arrow">↗</span><em id="ready-label">LOCKED</em></button>
+      </nav>
+
+      <section class="warning-note"><span class="warning-icon">!</span><p><strong>FICTIONAL CASE FILES</strong><br>Murder and supernatural horror. Some records contain sensitive relationship history. A diagnosis or sexual history is not proof of violence; only corroborated evidence should drive your conclusion.</p></section>
+    </aside>
+  </div>
+
+  <footer class="site-footer"><span>THE WARD 13 INCIDENT</span><span>THE RECORDS WERE MIXED. THE DEAD WERE NOT.</span><span>ALL PEOPLE AND EVENTS ARE FICTIONAL</span></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

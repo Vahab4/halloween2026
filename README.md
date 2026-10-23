@@ -1,29 +1,64 @@
-# MIND//NIGHT — Case 07
+# MIND//NIGHT — The Ward 13 Incident
 
-A short, responsive psychological-horror web experience about attention, memory, inference, and the importance of preserving uncertainty. Built with plain HTML, CSS, and JavaScript. No backend, account, analytics, external API, package installation, or paid service is required.
+A dark, mobile-friendly psychological-horror mystery made with plain HTML, CSS, and JavaScript. It is designed to upload directly to GitHub and publish with GitHub Pages.
 
-## Files
+## What is in the game?
 
-- `index.html` — page structure
-- `style.css` — interface, responsive layout, and animations
-- `app.js` — story, puzzles, branching endings, optional ambient sound, and sharing
-- `favicon.svg` — small browser-tab icon
+- A fictional psychiatric hospital attacked by vampires.
+- 103 registered patients, with 18 surviving files: Cases 1–5 and 44–56.
+- Eighteen readable patient dossiers with conflicting timelines, unreliable statements, hidden context, and clues that cross-reference one another.
+- An evidence board that unlocks as you inspect records.
+- A final accusation where the player selects a case, reconstructs a name, and identifies a motive.
+- Multiple endings, including a secret supplemental ending for reading all 18 files and reconstructing the hidden phrase.
+- A progressively more disturbing synthesized soundtrack using the browser's Web Audio API. No music files are downloaded; the sound starts only after the player turns it on and can be muted at any time.
+- Generated horror imagery bundled locally in `assets/`.
+- No accounts, backend, analytics, external AI, or data collection.
 
 ## Run locally
 
-Open `index.html` in a modern browser. For the most realistic test, use a local server or GitHub Pages; clipboard sharing works best in a secure context (HTTPS).
+1. Download and extract the ZIP.
+2. Open `index.html` in a modern browser.
+3. If your browser restricts local audio or clipboard operations, publish through GitHub Pages or run a simple local web server. The game itself needs no build step.
 
-## Customization
+## Publish on GitHub Pages
 
-- Story text and interactions are in `app.js`.
-- Colors and layout variables are at the top of `style.css`.
-- Page title and description are in the `<head>` of `index.html`.
-- The optional ambient sound is synthesized in the browser with the Web Audio API. It is off by default and does not load audio files.
+1. Create a public repository named `mind-night` (or any name you prefer).
+2. Upload the **contents** of this folder to the repository root, preserving the `assets/` folder:
 
-## Privacy and content note
+   ```text
+   index.html
+   style.css
+   app.js
+   favicon.svg
+   README.md
+   assets/
+     damaged-record.jpg
+     portrait-a.jpg
+     portrait-b.jpg
+     portrait-c.jpg
+     red-vision.jpg
+     ward-corridor.jpg
+     ward-exterior.jpg
+   ```
 
-The game does not send answers to a server or store them beyond the current page session. The share button only shares/copies a short ending summary after the player activates it. The experiences are fictional and are not diagnostic tests, clinical measures, or medical advice. The story intentionally distinguishes observed evidence from unverified explanations and avoids portraying psychiatric conditions as a source of danger.
+3. Open **Settings → Pages**.
+4. Under **Build and deployment**, choose **Deploy from a branch**, select `main` and `/(root)`, then click **Save**.
+5. Wait for GitHub to publish the site. The address normally resembles `https://YOUR-USERNAME.github.io/mind-night/`.
 
-## License
+Official guide: <https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site>
 
-You may modify and share this project. If you publish your own fork, consider crediting the original project and keep third-party assets properly licensed. The Google Fonts stylesheet is an optional visual enhancement; if unavailable, local system font fallbacks are used.
+## Controls
+
+- **Sound On/Off:** enables or mutes synthesized ambience. The musical texture intensifies as the player logs more case files.
+- **Patient Archive:** read the 18 surviving dossiers in either group.
+- **Evidence Board:** view recovered and still-corrupted evidence fragments.
+- **Final Accusation:** unlocks after reviewing at least 12 files. For the secret supplement, review all 18 and reconstruct the hidden phrase from the clock-related records.
+- **Reset:** begins a fresh session and clears the current in-memory investigation progress.
+
+## Story and content note
+
+Everything is fictional. The experience contains supernatural horror and non-graphic references to murder. Some files include sensitive relationship or sexual-history details, but those are deliberately not treated as indicators of violence. The mystery is resolved through corroborated timeline, access, identity, and motive clues—not by diagnosing a character. The game is entertainment and is not a clinical assessment.
+
+## Editing the mystery
+
+The patient-file stories and clue fragments are authored in the `patientFiles` array near the top of `app.js`. Evidence-board rules are in `evidenceCatalog`. The solution check is in `submitAccusation()`. You can add more story content without a compiler or package manager.
